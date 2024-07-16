@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e2e2e2"
+    android:orientation="vertical">
+
+    <com.example.mnvideoplayerlibrary.MNVideoPlayer
+        android:id="@+id/mn_videoplayer"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#000000"
+        app:mnVideo_autoPlay="true" />
+
+    <Button
+        android:id="@+id/btn_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/blue"
+        android:text="地址4---本地视频"
+        android:textColor="#FFFFFF" />
+
+</LinearLayout>
