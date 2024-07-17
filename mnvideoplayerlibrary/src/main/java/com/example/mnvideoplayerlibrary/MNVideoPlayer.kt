@@ -11,9 +11,10 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.SurfaceHolder
-import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.SeekBar
+import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.Toast
 import com.example.mnvideoplayerlibrary.databinding.MnPlayerViewBinding
 import kotlinx.coroutines.CoroutineScope
@@ -101,6 +102,28 @@ class MNVideoPlayer @JvmOverloads constructor(
         if (autoPlay) {   //自动播放网络视频
             playVideo(url1 ?: "", videoTitle ?: "")
         }
+        //seekBar拖动进度回调方法
+        binding?.mnSeekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+            override fun onProgressChanged(p0: SeekBar, p1: Int, p2: Boolean) {
+            }
+
+            override fun onStartTrackingTouch(p0: SeekBar) {
+            }
+
+            //拖动停止时回调
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                //播放器播放时才能拖动进度条生效
+                if (mediaPlayer != null && mediaPlayer?.isPlaying == true) {
+                    val maxCanSeekTo = seekBar.max - 5 * 1000
+                    //不能拖到最后
+                    if (seekBar.progress < maxCanSeekTo) {
+                        mediaPlayer?.seekTo(seekBar.progress)
+                    } else {
+                        mediaPlayer?.seekTo(maxCanSeekTo)
+                    }
+                }
+            }
+        })
     }
 
     // 处理表面尺寸变化，更新绘图参数
@@ -136,8 +159,9 @@ class MNVideoPlayer @JvmOverloads constructor(
         isPlaying = true
         // 把得到的总长度和进度条的匹配
         binding?.mnSeekBar?.max = mediaPlayer?.duration ?: 0
-        binding?.mnTvTime?.text = "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.currentPosition?.toLong() ?: 0L)} / " +
-                "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.duration?.toLong() ?: 0L)}"
+        binding?.mnTvTime?.text =
+            "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.currentPosition?.toLong() ?: 0L)} / " +
+                    "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.duration?.toLong() ?: 0L)}"
         startUpdating()
         //适配大小
         fitVideoSize()
@@ -156,8 +180,9 @@ class MNVideoPlayer @JvmOverloads constructor(
         updateJob = CoroutineScope(Dispatchers.Main).launch {
             while (isActive) {
                 binding?.mnSeekBar?.progress = mediaPlayer?.currentPosition ?: 0
-                binding?.mnTvTime?.text = "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.currentPosition?.toLong() ?: 0L)} / " +
-                        "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.duration?.toLong() ?: 0L)}"
+                binding?.mnTvTime?.text =
+                    "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.currentPosition?.toLong() ?: 0L)} / " +
+                            "${PlayerUtils.convertLongTimeToStr(mediaPlayer?.duration?.toLong() ?: 0L)}"
                 // 延迟一段时间
                 delay(updateInterval)
             }
